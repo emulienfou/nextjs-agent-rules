@@ -25,7 +25,7 @@ So this kit doesn't restate the framework. It only:
 | `template/AGENTS.md` | `AGENTS.md` | Managed block copied word for word from `create-next-app`, plus a kit block between `nextjs-agent-kit` markers |
 | `template/CLAUDE.md` | `CLAUDE.md` | `@AGENTS.md`, so Claude Code loads the same rules |
 | `template/biome.json` | `biome.json` | [`create-next-app` Biome template](https://github.com/vercel/next.js/blob/canary/packages/create-next-app/templates/app-tw/ts/biome.json) (`next` + `react` domains) |
-| `template/.mcp.json` | `.mcp.json` (merged) | [Next.js MCP guide](https://nextjs.org/docs/app/guides/mcp) |
+| `template/.mcp.json` | `.mcp.json` (merged; run with your package manager) | [Next.js MCP guide](https://nextjs.org/docs/app/guides/mcp) |
 | `scripts/install.sh` | — | Applies all of the above to a project |
 
 ### Skills (`--skills`)
@@ -63,16 +63,30 @@ Flags:
 
 The script never deletes anything. At the end it lists any ESLint/Prettier/oxlint packages and config files still there, for you to remove once `lint` passes.
 
-In a monorepo, point it at each Next.js app folder (the one whose `package.json` lists `next`). That's where `next dev` writes `AGENTS.md`.
+### Package manager
+
+The script uses the project's own package manager, never npm by default. It reads the root `package.json` `packageManager` field, then the lockfile (`pnpm-lock.yaml`, `yarn.lock`, `bun.lock` / `bun.lockb`, otherwise npm). Biome is installed with it (`pnpm add -D -E`, `yarn add -D -E`, `bun add -d --exact`, `npm install -D -E`). Skills and the MCP server run through its runner: `pnpm dlx`, `yarn dlx` (Yarn 2+), `bunx`, or `npx` (npm and Yarn 1).
+
+### Monorepos
+
+Point the script at the monorepo root or at any folder inside it. It finds the root by walking up to the `pnpm-workspace.yaml`, or to the `package.json` with `workspaces`. Then it writes everything once, at the root:
+
+- `AGENTS.md`, `CLAUDE.md` and `.mcp.json`.
+- `biome.json`, with its ignores widened to every package (`!**/node_modules`, `!**/.next`, …), plus `@biomejs/biome` and the `lint` / `format` scripts in the root `package.json` (`pnpm add -w` / `yarn add -W` where needed).
+- Skills and `skills-lock.json`.
+
+The root `AGENTS.md` gets only the kit block. Its docs pointer lists each Next.js app's `node_modules/next/dist/docs/`, because with pnpm `next` is often not visible from the root. An app is a workspace package that lists `next` and has a `next.config.*` or a `next dev` / `next build` script, so a UI library with `next` as a peer dependency doesn't count. `next dev` still writes its own managed block in each app's `AGENTS.md`. That's expected, so commit it. Set [`agentRules: false`](https://nextjs.org/docs/app/api-reference/config/next-config-js/agentRules) in an app's `next.config` if you don't want it.
+
+The final report also lists, for each app, a leftover `biome.json` or `.mcp.json`, or a `lint` script that doesn't run Biome. The root `lint` now covers those apps.
 
 ## Requirements
 
 - **Next.js 16.3+** for everything. On 16.2 the docs are bundled but `AGENTS.md` isn't kept up to date for you. On 16.1 or earlier, run `npx @next/codemod@canary agents-md` (or upgrade with `npx @next/codemod@latest upgrade latest`).
-- Node.js 22.20+ for `npx skills`.
+- Node.js 22.20+ for the `skills` CLI.
 
 ## Updating
 
-Re-run `install.sh`. It replaces only the kit block in `AGENTS.md`, adds missing `.mcp.json` entries and resets the `lint` / `format` scripts. Next.js keeps its own block current every time `next dev` runs. Update skills with `npx skills update`.
+Re-run `install.sh`. It replaces only the kit block in `AGENTS.md`, adds missing `.mcp.json` entries and resets the `lint` / `format` scripts. Next.js keeps its own block current every time `next dev` runs. Update skills with `<pm> dlx skills update` (`npx skills update` on npm).
 
 ## Sources
 
