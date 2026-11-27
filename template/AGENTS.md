@@ -43,19 +43,19 @@ Don't write Next.js APIs from memory. Look them up first, and follow deprecation
 
 ### Skills (workflows, not reference)
 
-| Task | Skill |
-| --- | --- |
-| Check a change against the running app | `next-dev-loop` |
-| Audit or shrink client bundles | `next-bundle-optimizer` |
-| Turn on Cache Components | `next-cache-components-adoption` |
-| Grow a route's static shell / instant navigation | `next-cache-components-optimizer` |
-| Turn on / tune Partial Prefetching | `next-partial-prefetching-adoption`, `next-partial-prefetching-optimizer` |
-| React / Next.js performance review | `vercel-react-best-practices` |
-| Component API design | `vercel-composition-patterns` |
-| UI, accessibility and UX review | `web-design-guidelines` |
+| Task                                             | Skill                                                                     |
+| ------------------------------------------------ | ------------------------------------------------------------------------- |
+| Check a change against the running app           | `next-dev-loop`                                                           |
+| Audit or shrink client bundles                   | `next-bundle-optimizer`                                                   |
+| Turn on Cache Components                         | `next-cache-components-adoption`                                          |
+| Grow a route's static shell / instant navigation | `next-cache-components-optimizer`                                         |
+| Turn on / tune Partial Prefetching               | `next-partial-prefetching-adoption`, `next-partial-prefetching-optimizer` |
+| React / Next.js performance review               | `vercel-react-best-practices`                                             |
+| Component API design                             | `vercel-composition-patterns`                                             |
+| UI, accessibility and UX review                  | `web-design-guidelines`                                                   |
 
 ### Managed blocks
 
-Next.js owns the content between the `<!-- BEGIN:nextjs-agent-* -->` and `<!-- END:nextjs-agent-* -->` markers and rewrites it. Don't edit it. Commit the changes `next dev` makes to this file.
+Don't edit text between `BEGIN`/`END` markers. `next dev` owns the `nextjs-agent-rules` and `nextjs-agent-feedback` blocks and rewrites them; commit the changes it makes. This `nextjs-agent-kit` block is rewritten by the kit's `install.sh`.
 
 <!-- END:nextjs-agent-kit -->
